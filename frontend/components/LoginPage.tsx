@@ -19,9 +19,12 @@ export const LoginPage: React.FC<NavigationProps> = ({ onNavigate }) => {
     return () => ctx.revert();
   }, []);
 
+  const handleLogin = () => {
+    onNavigate('dashboard');
+  };
+
   return (
     <div ref={containerRef} className="min-h-screen w-full bg-luxury-black flex items-center justify-center relative overflow-hidden px-6">
-      {/* Background Elements */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_#D9A44120,_transparent_40%)] opacity-40 pointer-events-none"></div>
       <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=2653&auto=format&fit=crop')] bg-cover bg-center opacity-10 mix-blend-overlay pointer-events-none"></div>
       
@@ -41,14 +44,14 @@ export const LoginPage: React.FC<NavigationProps> = ({ onNavigate }) => {
           </div>
 
           <form onSubmit={(e) => e.preventDefault()} className="space-y-2">
-            <Input label="Email Address" type="email" />
-            <Input label="Password" type="password" />
+            <Input label="Email Address" type="email" defaultValue="demo@aura.tech" />
+            <Input label="Password" type="password" defaultValue="password" />
             
             <div className="flex justify-end mb-8">
-              <a href="https://bhupeshkumar.tech" target="_blank" rel="noopener noreferrer" className="text-xs text-white/40 hover:text-luxury-gold transition-colors">Forgot Password?</a>
+              <a href="#" className="text-xs text-white/40 hover:text-luxury-gold transition-colors">Forgot Password?</a>
             </div>
 
-            <Button className="w-full flex justify-center" onClick={() => console.log('Login clicked')}>
+            <Button className="w-full flex justify-center" onClick={handleLogin}>
               Log In
             </Button>
           </form>

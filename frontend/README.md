@@ -1,22 +1,14 @@
-# Aura Estate AI
+# Aura MarketVision
 
-Ultra-premium AI real estate agent platform featuring editorial design, GSAP animations, and a luxury aesthetic.
+This contains everything you need to run your app locally.
 
 ## Run Locally
 
-**Prerequisites:** Node.js
+**Prerequisites:**  Node.js
+
 
 1. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-2. Run the app:
-   ```bash
-   npm run dev
-   ```
-
-3. Build for production:
-   ```bash
-   npm run build
-   ```
+   `npm install`
+2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+3. Run the app:
+   `npm run dev`

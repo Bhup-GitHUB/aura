@@ -1,57 +1,63 @@
-import React, { useEffect, useState } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Navbar } from './components/Navbar';
-import { Hero } from './components/Hero';
-import { FeatureBlock } from './components/FeatureBlock';
-import { StatsSection } from './components/StatsSection';
-import { CtaBanner } from './components/CtaBanner';
-import { Footer } from './components/Footer';
-import { LoginPage } from './components/LoginPage';
-import { SignupPage } from './components/SignupPage';
-import { PropertyFeature, Page } from './types';
+import React, { useEffect, useState } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Navbar } from "./components/Navbar";
+import { Hero } from "./components/Hero";
+import { FeatureBlock } from "./components/FeatureBlock";
+import { StatsSection } from "./components/StatsSection";
+import { DashboardPreview } from "./components/DashboardPreview";
+import { Pricing } from "./components/Pricing";
+import { Testimonials } from "./components/Testimonials";
+import { CtaBanner } from "./components/CtaBanner";
+import { Footer } from "./components/Footer";
+import { LoginPage } from "./components/LoginPage";
+import { SignupPage } from "./components/SignupPage";
+import { Dashboard } from "./components/Dashboard";
+import { PropertyFeature, Page } from "./types";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const features: PropertyFeature[] = [
   {
-    id: '1',
-    label: 'AI Valuation Engine',
-    title: 'Precision pricing, powered by neural networks.',
-    description: 'Unlike standard AVMs, Aura analyzes interior finishes, view corridors, and historical renovation data to predict luxury property values with 99.4% accuracy.',
-    imageUrl: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=2653&auto=format&fit=crop',
-    alignment: 'right'
+    id: "1",
+    label: "Fair Price Engine",
+    title: "Overpriced or Under-valued? Know instantly.",
+    description:
+      'Stop relying on asking prices. Aura analyzes thousands of registered transactions in areas like Bandra, Worli, and Juhu to give you the true "Fair Market Value" of any apartment.',
+    imageUrl:
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=2653&auto=format&fit=crop",
+    alignment: "right",
   },
   {
-    id: '2',
-    label: 'Automated Matchmaking',
-    title: 'Connect the perfect buyer before listing.',
-    description: 'Our proprietary algorithms scan your CRM and global wealth databases to identify high-net-worth individuals actively searching for properties like yours.',
-    imageUrl: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=2574&auto=format&fit=crop',
-    alignment: 'left'
+    id: "2",
+    label: "Future Projection",
+    title: "See the future of your investment.",
+    description:
+      "Our AI models factor in upcoming infrastructure (Metro lines, Coastal Road), commercial shifts, and historical appreciation to forecast property value 5 years down the line.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1565183997392-2f6f122e5912?q=80&w=2670&auto=format&fit=crop",
+    alignment: "left",
   },
   {
-    id: '3',
-    label: 'Predictive Staging',
-    title: 'Visualise potential without the overhead.',
-    description: 'Generate photorealistic, physically accurate virtual staging for empty spaces in seconds. Showcase varied interior styles tailored to specific buyer personas.',
-    imageUrl: 'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?q=80&w=2670&auto=format&fit=crop',
-    alignment: 'right'
-  }
+    id: "3",
+    label: "Lifestyle & Connectivity",
+    title: "The metrics that actually matter.",
+    description:
+      "Beyond just Sq. Ft. Analysis. We grade properties on AQI levels, traffic congestion patterns, proximity to top IB schools, and social infrastructure density.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?q=80&w=2670&auto=format&fit=crop",
+    alignment: "right",
+  },
 ];
 
 const App: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState<Page>('home');
-  
+  const [currentPage, setCurrentPage] = useState<Page>("home");
+
   useEffect(() => {
-    // Smooth scroll behavior for anchor links
-    document.documentElement.style.scrollBehavior = 'smooth';
-    
-    // Global fade in
+    document.documentElement.style.scrollBehavior = "smooth";
     gsap.to("body", { opacity: 1, duration: 0.8, ease: "power2.in" });
   }, []);
 
-  // Scroll to top when page changes
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentPage]);
@@ -59,43 +65,61 @@ const App: React.FC = () => {
   return (
     <div className="antialiased bg-luxury-black text-luxury-text selection:bg-luxury-gold selection:text-luxury-black font-sans min-h-screen flex flex-col">
       <div className="noise-overlay"></div>
-      
-      {/* Conditionally render Navbar based on page for cleaner look on Auth, 
-          but requirements usually imply standard nav availability. 
-          We'll pass the navigation handler. */}
-      {currentPage === 'home' && <Navbar onNavigate={setCurrentPage} />}
+
+      {currentPage === "home" && <Navbar onNavigate={setCurrentPage} />}
 
       <main className="flex-grow">
-        {currentPage === 'home' && (
+        {currentPage === "home" && (
           <>
             <Hero />
             <StatsSection />
-            
-            {/* White Background Section for Features */}
-            <div className="bg-white relative z-20 rounded-t-[30px] md:rounded-t-[60px] -mt-12 shadow-[0_-50px_100px_rgba(0,0,0,0.5)] pt-12 pb-12">
+
+            <DashboardPreview />
+
+            <div className="bg-white relative z-20 rounded-t-[30px] md:rounded-t-[60px] -mt-12 shadow-[0_-50px_100px_rgba(0,0,0,0.5)] pt-20 pb-12">
               <div className="w-12 h-1 bg-gray-200 mx-auto rounded-full mb-20 opacity-50"></div>
-              
+
+              <div className="text-center mb-16 px-6">
+                <span className="text-luxury-gold text-xs font-bold tracking-[0.3em] uppercase mb-4 block">
+                  Capabilities
+                </span>
+                <h2 className="text-4xl md:text-5xl font-serif text-luxury-black">
+                  Intelligence for the Indian Investor.
+                </h2>
+              </div>
+
               {features.map((feature, index) => (
-                <FeatureBlock key={feature.id} feature={feature} index={index} />
+                <FeatureBlock
+                  key={feature.id}
+                  feature={feature}
+                  index={index}
+                />
               ))}
+
+              <Pricing />
             </div>
 
+            <Testimonials />
             <CtaBanner />
           </>
         )}
 
-        {currentPage === 'login' && <LoginPage onNavigate={setCurrentPage} />}
-        
-        {currentPage === 'signup' && <SignupPage onNavigate={setCurrentPage} />}
+        {currentPage === "login" && <LoginPage onNavigate={setCurrentPage} />}
+
+        {currentPage === "signup" && <SignupPage onNavigate={setCurrentPage} />}
+
+        {currentPage === "dashboard" && (
+          <Dashboard onNavigate={setCurrentPage} />
+        )}
       </main>
 
-      {/* Footer only on Home page to keep auth pages focused */}
-      {currentPage === 'home' && <Footer />}
-      
-      {/* Simple copyright footer for auth pages */}
-      {currentPage !== 'home' && (
+      {currentPage === "home" && <Footer />}
+
+      {currentPage !== "home" && currentPage !== "dashboard" && (
         <div className="absolute bottom-4 w-full text-center z-10 pointer-events-none">
-          <p className="text-[10px] text-white/20 uppercase tracking-widest">© 2024 Aura Estate AI</p>
+          <p className="text-[10px] text-white/20 uppercase tracking-widest">
+            © 2024 Aura MarketVision
+          </p>
         </div>
       )}
     </div>

@@ -1,8 +1,9 @@
+
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { PropertyFeature } from '../types';
-import { ArrowRight, BarChart3, Sparkles, Users, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, Sparkles, TrendingUp, CheckCircle2 } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -20,7 +21,6 @@ export const FeatureBlock: React.FC<FeatureBlockProps> = ({ feature, index }) =>
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Content Fade In
       gsap.fromTo(contentRef.current,
         { y: 60, opacity: 0 },
         {
@@ -35,7 +35,6 @@ export const FeatureBlock: React.FC<FeatureBlockProps> = ({ feature, index }) =>
         }
       );
 
-      // Parallax Image Effect
       if (imageRef.current && imageContainerRef.current) {
         gsap.fromTo(imageRef.current,
           { scale: 1.2, yPercent: -10 },
@@ -52,7 +51,6 @@ export const FeatureBlock: React.FC<FeatureBlockProps> = ({ feature, index }) =>
         );
       }
 
-      // Overlay Card Reveal
       gsap.fromTo(overlayRef.current,
         { y: 40, opacity: 0, scale: 0.9 },
         {
@@ -76,48 +74,44 @@ export const FeatureBlock: React.FC<FeatureBlockProps> = ({ feature, index }) =>
 
   const isReversed = feature.alignment === 'right';
 
-  // Render different AI overlays based on the feature ID for visual variety
   const renderOverlay = () => {
-    if (feature.id === '1') { // Valuation
+    if (feature.id === '1') {
       return (
         <div ref={overlayRef} className="absolute -bottom-10 -right-10 md:bottom-8 md:-left-8 bg-luxury-black/80 backdrop-blur-xl border border-white/10 p-6 rounded-sm shadow-2xl max-w-[240px] z-20">
           <div className="flex items-center justify-between mb-4">
-            <span className="text-xs text-gray-400 uppercase tracking-wider">AI Estimation</span>
+            <span className="text-xs text-gray-400 uppercase tracking-wider">True Valuation</span>
             <Sparkles size={14} className="text-luxury-gold" />
           </div>
-          <div className="text-3xl font-serif text-white mb-1">$4,250,000</div>
+          <div className="text-3xl font-serif text-white mb-1">₹4.25 Cr</div>
           <div className="flex items-center gap-2 text-green-400 text-xs font-mono">
-            <ArrowRight size={12} className="-rotate-45" />
-            <span>+12% vs Market</span>
+            <ArrowRight size={12} className="rotate-45" />
+            <span>Undervalued by 8%</span>
           </div>
         </div>
       );
-    } else if (feature.id === '2') { // Matchmaking
+    } else if (feature.id === '2') {
       return (
-        <div ref={overlayRef} className="absolute -bottom-6 -left-6 md:top-8 md:-right-8 bg-luxury-black/80 backdrop-blur-xl border border-white/10 p-5 rounded-sm shadow-2xl z-20">
+        <div ref={overlayRef} className="absolute -bottom-6 -left-6 md:top-8 md:-right-8 bg-luxury-black/80 backdrop-blur-xl border border-white/10 p-5 rounded-sm shadow-2xl z-20 min-w-[200px]">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-            <span className="text-xs text-white font-bold tracking-wider uppercase">Buyer Match Found</span>
+            <TrendingUp size={14} className="text-green-500" />
+            <span className="text-xs text-white font-bold tracking-wider uppercase">2029 Forecast</span>
           </div>
-          <div className="flex -space-x-3 mb-3">
-            {[1,2,3].map(i => (
-              <div key={i} className="w-10 h-10 rounded-full border-2 border-luxury-black bg-gray-800 flex items-center justify-center text-xs text-white">
-                <Users size={14} />
-              </div>
-            ))}
-            <div className="w-10 h-10 rounded-full border-2 border-luxury-black bg-luxury-gold flex items-center justify-center text-xs font-bold text-black">+14</div>
+          <div className="flex items-baseline gap-1 mb-2">
+             <span className="text-2xl font-serif text-white">₹7.8 Cr</span>
+             <span className="text-xs text-gray-400">Est. Value</span>
           </div>
           <div className="w-full bg-gray-700 h-1 rounded-full overflow-hidden">
-            <div className="bg-luxury-gold h-full w-[85%]"></div>
+            <div className="bg-green-500 h-full w-[65%]"></div>
           </div>
+          <p className="text-[10px] text-gray-400 mt-2">+12% due to Metro Line 3</p>
         </div>
       );
-    } else { // Staging
+    } else {
       return (
          <div ref={overlayRef} className="absolute top-8 left-8 bg-white/10 backdrop-blur-md border border-white/20 px-6 py-3 rounded-full z-20">
             <div className="flex items-center gap-3">
                <CheckCircle2 size={16} className="text-white" />
-               <span className="text-sm font-medium text-white">Virtual Staging Complete</span>
+               <span className="text-sm font-medium text-white">AQI: 45 (Good) | Traffic: Low</span>
             </div>
          </div>
       );
@@ -129,7 +123,6 @@ export const FeatureBlock: React.FC<FeatureBlockProps> = ({ feature, index }) =>
       <div className="container mx-auto px-6">
         <div className={`flex flex-col ${isReversed ? 'lg:flex-row-reverse' : 'lg:flex-row'} items-center gap-16 lg:gap-32`}>
           
-          {/* Content Side */}
           <div ref={contentRef} className="flex-1 max-w-xl relative z-10">
             <div className="flex items-center gap-4 mb-8">
               <span className="h-[1px] w-8 bg-luxury-gold"></span>
@@ -148,16 +141,14 @@ export const FeatureBlock: React.FC<FeatureBlockProps> = ({ feature, index }) =>
             
             <button className="group relative overflow-hidden py-3 px-0 text-xs font-bold tracking-[0.2em] uppercase text-luxury-black transition-colors">
               <span className="relative z-10 flex items-center gap-3">
-                Discover More 
+                View Live Demo
                 <ArrowRight size={14} className="group-hover:translate-x-2 transition-transform duration-300" />
               </span>
               <span className="absolute bottom-0 left-0 w-full h-[1px] bg-luxury-black/20 group-hover:bg-luxury-gold transition-colors duration-300"></span>
             </button>
           </div>
 
-          {/* Image Side */}
           <div className="flex-1 w-full relative">
-             {/* Decorative Background Number */}
              <span className="absolute -top-20 -left-10 text-[200px] font-serif text-gray-100 leading-none select-none pointer-events-none z-0">
                 0{index + 1}
              </span>
@@ -169,11 +160,9 @@ export const FeatureBlock: React.FC<FeatureBlockProps> = ({ feature, index }) =>
                 alt={feature.title}
                 className="w-full h-full object-cover"
               />
-              {/* Gradient Overlay for text readability if needed, though mainly for mood */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
             </div>
             
-            {/* Floating AI Element */}
             {renderOverlay()}
 
           </div>

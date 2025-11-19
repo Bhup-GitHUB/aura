@@ -35,7 +35,6 @@ export const Button: React.FC<ButtonProps> = ({
       const x = clientX - (left + width / 2);
       const y = clientY - (top + height / 2);
 
-      // Magnetic pull effect strength
       xTo(x * 0.3);
       yTo(y * 0.3);
       textXTo(x * 0.1);

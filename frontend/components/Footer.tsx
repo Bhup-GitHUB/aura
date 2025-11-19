@@ -7,7 +7,6 @@ export const Footer: React.FC = () => {
       <div className="container mx-auto px-6">
         <div className="flex flex-col items-center text-center mb-20">
           
-          {/* Brand Centered */}
           <div className="flex items-center gap-2 mb-8">
             <div className="w-6 h-6 border border-luxury-gold rotate-45 flex items-center justify-center">
               <div className="w-2 h-2 bg-luxury-gold" />
@@ -19,16 +18,14 @@ export const Footer: React.FC = () => {
             Redefining real estate excellence through artificial intelligence and human-centric design.
           </p>
 
-          {/* Contact Info */}
           <div className="space-y-2 mb-12">
             <p className="text-xs text-luxury-text font-bold tracking-widest uppercase">Call us</p>
             <p className="text-white font-serif text-xl">(310) 955-1077</p>
           </div>
 
-          {/* Socials */}
           <div className="flex gap-4 mb-16">
             {[Instagram, Linkedin, Twitter].map((Icon, i) => (
-              <a key={i} href="https://bhupeshkumar.tech" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white hover:bg-luxury-gold hover:border-luxury-gold hover:text-luxury-black transition-all duration-300">
+              <a key={i} href="#" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white hover:bg-luxury-gold hover:border-luxury-gold hover:text-luxury-black transition-all duration-300">
                 <Icon size={16} />
               </a>
             ))}
@@ -43,7 +40,6 @@ export const Footer: React.FC = () => {
         </div>
       </div>
       
-      {/* Fixed Chat Button */}
       <div className="fixed bottom-8 right-8 z-40">
         <button className="w-14 h-14 bg-luxury-charcoal text-white rounded-full shadow-2xl flex items-center justify-center hover:bg-luxury-gold transition-colors duration-300 border border-white/10">
           <MessageSquare />

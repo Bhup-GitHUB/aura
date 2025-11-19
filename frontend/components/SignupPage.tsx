@@ -19,14 +19,16 @@ export const SignupPage: React.FC<NavigationProps> = ({ onNavigate }) => {
     return () => ctx.revert();
   }, []);
 
+  const handleSignup = () => {
+      onNavigate('dashboard');
+  };
+
   return (
     <div ref={containerRef} className="min-h-screen w-full bg-luxury-black flex items-center justify-center relative overflow-hidden px-6 py-12">
-      {/* Background Elements */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,_#2D6DF620,_transparent_50%)] opacity-30 pointer-events-none"></div>
       
       <div ref={contentRef} className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
         
-        {/* Left Side - Editorial Content */}
         <div className="hidden lg:block pr-12">
           <button 
             onClick={() => onNavigate('home')}
@@ -62,7 +64,6 @@ export const SignupPage: React.FC<NavigationProps> = ({ onNavigate }) => {
           </div>
         </div>
 
-        {/* Right Side - Form */}
         <div className="glass-panel p-10 md:p-14 rounded-sm border border-white/10 shadow-2xl backdrop-blur-2xl relative">
            <div className="lg:hidden mb-8">
             <button 
@@ -86,7 +87,7 @@ export const SignupPage: React.FC<NavigationProps> = ({ onNavigate }) => {
             <Input label="Create Password" type="password" />
             
             <div className="pt-6">
-              <Button className="w-full flex justify-center" onClick={() => console.log('Signup clicked')}>
+              <Button className="w-full flex justify-center" onClick={handleSignup}>
                 Submit Application
               </Button>
             </div>

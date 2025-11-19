@@ -23,7 +23,7 @@ export interface ClientLogo {
   url: string;
 }
 
-export type Page = 'home' | 'login' | 'signup';
+export type Page = 'home' | 'login' | 'signup' | 'dashboard';
 
 export interface NavigationProps {
   onNavigate: (page: Page) => void;

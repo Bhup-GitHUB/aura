@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -5,10 +6,10 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
 
 const stats = [
-  { value: "$4.2B+", label: "Property Value Analyzed" },
-  { value: "1,200+", label: "Elite Agents Empowered" },
-  { value: "99.4%", label: "Valuation Accuracy" },
-  { value: "24/7", label: "Real-time Intelligence" }
+  { value: "₹12K Cr+", label: "Property Value Analyzed" },
+  { value: "45,000+", label: "Verified Transactions" },
+  { value: "Mumbai", label: "Primary Focus Market" },
+  { value: "98.5%", label: "Projection Accuracy" }
 ];
 
 export const StatsSection: React.FC = () => {
@@ -28,7 +29,6 @@ export const StatsSection: React.FC = () => {
         }
       });
       
-      // Add a subtle line drawing animation
       gsap.from(".divider-line", {
         scaleY: 0,
         duration: 1.5,
@@ -48,7 +48,6 @@ export const StatsSection: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-0">
           {stats.map((stat, index) => (
             <div key={index} className="stat-item relative flex flex-col items-center text-center group">
-              {/* Vertical Divider for Desktop */}
               {index !== 0 && (
                 <div className="hidden lg:block absolute left-0 top-0 bottom-0 w-[1px] bg-gradient-to-b from-transparent via-white/10 to-transparent divider-line"></div>
               )}
