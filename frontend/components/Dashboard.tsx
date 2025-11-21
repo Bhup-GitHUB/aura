@@ -23,6 +23,7 @@ import {
 import { Button } from "./ui/Button";
 import { Input } from "./ui/Input";
 import { Select } from "./ui/Select";
+import { authService } from "../src/services/auth.service";
 
 type DashboardView =
   | "overview"
@@ -125,6 +126,7 @@ export const Dashboard: React.FC<NavigationProps> = ({ onNavigate }) => {
   };
 
   const handleLogout = () => {
+    authService.logout();
     onNavigate("home");
   };
 

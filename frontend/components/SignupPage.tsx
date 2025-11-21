@@ -1,13 +1,19 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { Button } from './ui/Button';
 import { Input } from './ui/Input';
 import { NavigationProps } from '../types';
 import { ArrowLeft, Check } from 'lucide-react';
+import { authService } from '../src/services/auth.service';
 
 export const SignupPage: React.FC<NavigationProps> = ({ onNavigate }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -19,8 +25,23 @@ export const SignupPage: React.FC<NavigationProps> = ({ onNavigate }) => {
     return () => ctx.revert();
   }, []);
 
-  const handleSignup = () => {
-      onNavigate('dashboard');
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setSuccess(false);
+    setLoading(true);
+
+    try {
+      await authService.signup({ username, password });
+      setSuccess(true);
+      setTimeout(() => {
+        onNavigate('login');
+      }, 1500);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Signup failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -77,18 +98,35 @@ export const SignupPage: React.FC<NavigationProps> = ({ onNavigate }) => {
 
           <h2 className="text-2xl font-serif text-white mb-8">Request Access</h2>
           
-          <form onSubmit={(e) => e.preventDefault()} className="space-y-4">
-            <div className="grid grid-cols-2 gap-6">
-              <Input label="First Name" />
-              <Input label="Last Name" />
-            </div>
-            <Input label="Work Email" type="email" />
-            <Input label="Brokerage / Agency" />
-            <Input label="Create Password" type="password" />
+          <form onSubmit={handleSignup} className="space-y-4">
+            <Input 
+              label="Username" 
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              minLength={3}
+            />
+            <Input 
+              label="Password" 
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={6}
+            />
+            
+            {error && (
+              <div className="text-red-400 text-sm mt-2">{error}</div>
+            )}
+            
+            {success && (
+              <div className="text-green-400 text-sm mt-2">Account created successfully! Redirecting to login...</div>
+            )}
             
             <div className="pt-6">
-              <Button className="w-full flex justify-center" onClick={handleSignup}>
-                Submit Application
+              <Button className="w-full flex justify-center" type="submit" disabled={loading}>
+                {loading ? 'Creating Account...' : 'Submit Application'}
               </Button>
             </div>
           </form>

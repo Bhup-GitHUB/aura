@@ -14,6 +14,7 @@ import { LoginPage } from "./components/LoginPage";
 import { SignupPage } from "./components/SignupPage";
 import { Dashboard } from "./components/Dashboard";
 import { PropertyFeature, Page } from "./types";
+import { authService } from "./src/services/auth.service";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -61,6 +62,13 @@ const App: React.FC = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+  }, [currentPage]);
+
+  useEffect(() => {
+    // Protect dashboard route - redirect to login if not authenticated
+    if (currentPage === "dashboard" && !authService.isAuthenticated()) {
+      setCurrentPage("login");
+    }
   }, [currentPage]);
 
   return (

@@ -1,13 +1,18 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { Button } from './ui/Button';
 import { Input } from './ui/Input';
 import { NavigationProps } from '../types';
 import { ArrowLeft } from 'lucide-react';
+import { authService } from '../src/services/auth.service';
 
 export const LoginPage: React.FC<NavigationProps> = ({ onNavigate }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLDivElement>(null);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -19,8 +24,19 @@ export const LoginPage: React.FC<NavigationProps> = ({ onNavigate }) => {
     return () => ctx.revert();
   }, []);
 
-  const handleLogin = () => {
-    onNavigate('dashboard');
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      await authService.login({ username, password });
+      onNavigate('dashboard');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Login failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -43,16 +59,32 @@ export const LoginPage: React.FC<NavigationProps> = ({ onNavigate }) => {
             <p className="text-white/40 font-light text-sm">Access your agent dashboard.</p>
           </div>
 
-          <form onSubmit={(e) => e.preventDefault()} className="space-y-2">
-            <Input label="Email Address" type="email" />
-            <Input label="Password" type="password" />
+          <form onSubmit={handleLogin} className="space-y-2">
+            <Input 
+              label="Username" 
+              type="text" 
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+            <Input 
+              label="Password" 
+              type="password" 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            
+            {error && (
+              <div className="text-red-400 text-sm mt-2">{error}</div>
+            )}
             
             <div className="flex justify-end mb-8">
               <a href="#" className="text-xs text-white/40 hover:text-luxury-gold transition-colors">Forgot Password?</a>
             </div>
 
-            <Button className="w-full flex justify-center" onClick={handleLogin}>
-              Log In
+            <Button className="w-full flex justify-center" type="submit" disabled={loading}>
+              {loading ? 'Logging in...' : 'Log In'}
             </Button>
           </form>
 

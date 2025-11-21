@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
 
-interface ButtonProps {
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
   variant?: 'primary' | 'outline' | 'text';
   className?: string;
@@ -12,7 +12,10 @@ export const Button: React.FC<ButtonProps> = ({
   children, 
   variant = 'primary', 
   className = '',
-  onClick 
+  onClick,
+  disabled,
+  type = 'button',
+  ...props
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const textRef = useRef<HTMLSpanElement>(null);
@@ -69,7 +72,10 @@ export const Button: React.FC<ButtonProps> = ({
     <button 
       ref={buttonRef}
       onClick={onClick}
-      className={`${baseStyles} ${variants[variant]} ${className}`}
+      type={type}
+      disabled={disabled}
+      className={`${baseStyles} ${variants[variant]} ${className} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+      {...props}
     >
       <span ref={textRef} className="relative z-10 inline-block">
         {children}
