@@ -36,11 +36,11 @@ type DashboardView =
   | "smart-invest";
 
 const marketData = [
-  { year: "2020", mumbai: 32000, bangalore: 18000, delhi: 22000 },
-  { year: "2021", mumbai: 34500, bangalore: 21000, delhi: 23500 },
-  { year: "2022", mumbai: 38000, bangalore: 23500, delhi: 25000 },
-  { year: "2023", mumbai: 40500, bangalore: 25000, delhi: 26500 },
-  { year: "2024", mumbai: 42500, bangalore: 27000, delhi: 28000 },
+  { year: "2021", mumbai: 32000, bangalore: 18000, delhi: 22000 },
+  { year: "2022", mumbai: 34500, bangalore: 21000, delhi: 23500 },
+  { year: "2023", mumbai: 38000, bangalore: 23500, delhi: 25000 },
+  { year: "2024", mumbai: 40500, bangalore: 25000, delhi: 26500 },
+  { year: "2025", mumbai: 42500, bangalore: 27000, delhi: 28000 },
 ];
 
 export const Dashboard: React.FC<NavigationProps> = ({ onNavigate }) => {

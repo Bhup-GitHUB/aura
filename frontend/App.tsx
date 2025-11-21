@@ -137,7 +137,7 @@ const App: React.FC = () => {
       {currentPage !== "home" && currentPage !== "dashboard" && (
         <div className="absolute bottom-4 w-full text-center z-10 pointer-events-none">
           <p className="text-[10px] text-white/20 uppercase tracking-widest">
-            © 2024 Aura MarketVision
+            © 2025 Aura MarketVision
           </p>
         </div>
       )}
