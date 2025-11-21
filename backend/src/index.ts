@@ -1,9 +1,16 @@
-import { Hono } from 'hono'
+import { Hono } from "hono";
+import { cors } from "hono/cors";
+import authRoutes from "./routes/auth.routes";
+import { Bindings } from "./types";
 
-const app = new Hono()
+const app = new Hono<{ Bindings: Bindings }>();
 
-app.get('/', (c) => {
-  return c.text('Hello Hono!')
-})
+app.use("/*", cors());
 
-export default app
+app.get("/health", (c) => {
+  return c.json({ status: "ok", timestamp: new Date().toISOString() });
+});
+
+app.route("/api/auth", authRoutes);
+
+export default app;
