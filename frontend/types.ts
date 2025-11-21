@@ -10,7 +10,7 @@ export interface PropertyFeature {
   description: string;
   imageUrl: string;
   label: string;
-  alignment: 'left' | 'right';
+  alignment: "left" | "right";
 }
 
 export interface Statistic {
@@ -23,7 +23,13 @@ export interface ClientLogo {
   url: string;
 }
 
-export type Page = 'home' | 'login' | 'signup' | 'dashboard';
+export type Page =
+  | "home"
+  | "login"
+  | "signup"
+  | "dashboard"
+  | "profile"
+  | "properties";
 
 export interface NavigationProps {
   onNavigate: (page: Page) => void;

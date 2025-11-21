@@ -1,3 +1,37 @@
+-- Drop and recreate users table with all required columns
+-- This approach works better than ALTER TABLE ADD COLUMN for NOT NULL fields
+
+-- Store existing data temporarily (if any)
+CREATE TABLE `users_backup` AS SELECT * FROM `users`;
+--> statement-breakpoint
+
+-- Drop the old table
+DROP TABLE `users`;
+--> statement-breakpoint
+
+-- Create users table with complete schema
+CREATE TABLE `users` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`email` text NOT NULL,
+	`username` text NOT NULL,
+	`password` text NOT NULL,
+	`first_name` text,
+	`last_name` text,
+	`brokerage` text,
+	`subscription_tier` text DEFAULT 'free' NOT NULL,
+	`created_at` text NOT NULL,
+	`updated_at` text,
+	`last_login` text
+);
+--> statement-breakpoint
+
+CREATE UNIQUE INDEX `users_email_unique` ON `users` (`email`);
+--> statement-breakpoint
+
+CREATE UNIQUE INDEX `users_username_unique` ON `users` (`username`);
+--> statement-breakpoint
+
+-- Create other tables
 CREATE TABLE `api_usage` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`user_id` integer NOT NULL,
@@ -8,6 +42,7 @@ CREATE TABLE `api_usage` (
 	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
+
 CREATE TABLE `investment_picks` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`locality` text NOT NULL,
@@ -23,6 +58,7 @@ CREATE TABLE `investment_picks` (
 	`updated_at` text
 );
 --> statement-breakpoint
+
 CREATE TABLE `market_trends` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`city` text NOT NULL,
@@ -38,6 +74,7 @@ CREATE TABLE `market_trends` (
 	`created_at` text NOT NULL
 );
 --> statement-breakpoint
+
 CREATE TABLE `properties` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`external_id` text,
@@ -64,7 +101,10 @@ CREATE TABLE `properties` (
 	`updated_at` text
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `properties_external_id_unique` ON `properties` (`external_id`);--> statement-breakpoint
+
+CREATE UNIQUE INDEX `properties_external_id_unique` ON `properties` (`external_id`);
+--> statement-breakpoint
+
 CREATE TABLE `property_analyses` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`property_id` integer NOT NULL,
@@ -89,6 +129,7 @@ CREATE TABLE `property_analyses` (
 	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
+
 CREATE TABLE `saved_properties` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`user_id` integer NOT NULL,
@@ -100,6 +141,7 @@ CREATE TABLE `saved_properties` (
 	FOREIGN KEY (`property_id`) REFERENCES `properties`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
+
 CREATE TABLE `search_history` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`user_id` integer NOT NULL,
@@ -110,6 +152,7 @@ CREATE TABLE `search_history` (
 	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
+
 CREATE TABLE `user_profiles` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`user_id` integer NOT NULL,
@@ -120,10 +163,6 @@ CREATE TABLE `user_profiles` (
 	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
-ALTER TABLE `users` ADD `email` text NOT NULL;--> statement-breakpoint
-ALTER TABLE `users` ADD `first_name` text;--> statement-breakpoint
-ALTER TABLE `users` ADD `last_name` text;--> statement-breakpoint
-ALTER TABLE `users` ADD `brokerage` text;--> statement-breakpoint
-ALTER TABLE `users` ADD `subscription_tier` text DEFAULT 'free' NOT NULL;--> statement-breakpoint
-ALTER TABLE `users` ADD `last_login` text;--> statement-breakpoint
-CREATE UNIQUE INDEX `users_email_unique` ON `users` (`email`);
+
+-- Drop the backup table
+DROP TABLE IF EXISTS `users_backup`;

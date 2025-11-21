@@ -72,4 +72,18 @@ propertyRoutes.put(
   PropertyController.updateSavedProperty
 );
 
+// AI Analysis Routes
+propertyRoutes.post(
+  "/analyze-ai",
+  authMiddleware,
+  zValidator("json", propertySchema),
+  PropertyController.analyzePropertyWithAI
+);
+
+propertyRoutes.get(
+  "/quick-estimate",
+  authMiddleware,
+  PropertyController.quickPriceEstimate
+);
+
 export default propertyRoutes;

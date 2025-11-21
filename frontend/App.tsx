@@ -13,6 +13,8 @@ import { Footer } from "./components/Footer";
 import { LoginPage } from "./components/LoginPage";
 import { SignupPage } from "./components/SignupPage";
 import { Dashboard } from "./components/Dashboard";
+import { Profile } from "./components/Profile";
+import { PropertySearch } from "./components/PropertySearch";
 import { PropertyFeature, Page } from "./types";
 import { authService } from "./src/services/auth.service";
 
@@ -65,8 +67,12 @@ const App: React.FC = () => {
   }, [currentPage]);
 
   useEffect(() => {
-    // Protect dashboard route - redirect to login if not authenticated
-    if (currentPage === "dashboard" && !authService.isAuthenticated()) {
+    // Protect authenticated routes - redirect to login if not authenticated
+    const protectedPages: Page[] = ["dashboard", "profile", "properties"];
+    if (
+      protectedPages.includes(currentPage) &&
+      !authService.isAuthenticated()
+    ) {
       setCurrentPage("login");
     }
   }, [currentPage]);
@@ -117,6 +123,12 @@ const App: React.FC = () => {
 
         {currentPage === "dashboard" && (
           <Dashboard onNavigate={setCurrentPage} />
+        )}
+
+        {currentPage === "profile" && <Profile onNavigate={setCurrentPage} />}
+
+        {currentPage === "properties" && (
+          <PropertySearch onNavigate={setCurrentPage} />
         )}
       </main>
 

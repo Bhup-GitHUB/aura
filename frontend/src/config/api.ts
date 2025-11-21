@@ -4,5 +4,11 @@ export const API_ENDPOINTS = {
   health: '/health',
   signup: '/api/auth/signup',
   login: '/api/auth/login',
+  logout: '/api/auth/logout',
+  profile: '/api/auth/me',
+  changePassword: '/api/auth/change-password',
+  refreshToken: '/api/auth/refresh',
+  properties: '/api/properties',
+  savedProperties: '/api/properties/saved',
 };
 

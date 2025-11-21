@@ -19,6 +19,7 @@ import {
   LineChart,
   Sparkles,
   ChevronDown,
+  User,
 } from "lucide-react";
 import { Button } from "./ui/Button";
 import { Input } from "./ui/Input";
@@ -49,6 +50,7 @@ export const Dashboard: React.FC<NavigationProps> = ({ onNavigate }) => {
   const [comingSoonTitle, setComingSoonTitle] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
 
   const [selectedYear, setSelectedYear] = useState<string>("2024");
 
@@ -73,6 +75,24 @@ export const Dashboard: React.FC<NavigationProps> = ({ onNavigate }) => {
       );
     }, containerRef);
     return () => ctx.revert();
+  }, []);
+
+  useEffect(() => {
+    const loadUser = async () => {
+      const currentUser = authService.getUser();
+      if (currentUser) {
+        setUser(currentUser);
+        try {
+          const profile = await authService.getProfile();
+          if (profile.success && profile.data) {
+            setUser(profile.data);
+          }
+        } catch (err) {
+          // Use stored user if profile fetch fails
+        }
+      }
+    };
+    loadUser();
   }, []);
 
   useEffect(() => {
@@ -960,6 +980,14 @@ export const Dashboard: React.FC<NavigationProps> = ({ onNavigate }) => {
             <span>Smart Invest</span>
           </button>
 
+          <button
+            onClick={() => onNavigate("properties")}
+            className="w-full flex items-center gap-3 px-4 py-3 text-sm rounded-sm transition-all text-gray-400 hover:text-white"
+          >
+            <Search size={16} />
+            <span>Properties</span>
+          </button>
+
           <div className="px-4 mt-8 mb-2 text-[10px] text-gray-500 uppercase tracking-widest font-bold">
             Advanced
           </div>
@@ -1026,13 +1054,18 @@ export const Dashboard: React.FC<NavigationProps> = ({ onNavigate }) => {
                 className="flex items-center gap-3 border-l border-white/10 pl-6 p-2 rounded-sm"
               >
                 <div className="text-right hidden md:block">
-                  <p className="text-sm font-medium text-white">Arjun Verma</p>
+                  <p className="text-sm font-medium text-white">
+                    {user?.firstName && user?.lastName
+                      ? `${user.firstName} ${user.lastName}`
+                      : user?.username || "User"}
+                  </p>
                   <p className="text-[10px] text-luxury-gold uppercase tracking-wider">
-                    Pro
+                    {user?.subscriptionTier || "Free"}
                   </p>
                 </div>
                 <div className="w-9 h-9 rounded-full bg-gradient-to-br from-luxury-gold to-[#8a6b29] flex items-center justify-center text-luxury-black font-bold text-sm">
-                  AV
+                  {user?.firstName?.[0] || user?.username?.[0] || "U"}
+                  {user?.lastName?.[0] || ""}
                 </div>
                 <ChevronDown
                   size={14}
@@ -1048,6 +1081,15 @@ export const Dashboard: React.FC<NavigationProps> = ({ onNavigate }) => {
                     onClick={() => setUserMenuOpen(false)}
                   ></div>
                   <div className="absolute right-0 top-full mt-2 w-48 bg-[#1a1a1a] border border-white/10 rounded-sm shadow-2xl py-2 z-50 animate-fade-in">
+                    <button
+                      onClick={() => {
+                        setUserMenuOpen(false);
+                        onNavigate("profile");
+                      }}
+                      className="w-full text-left px-4 py-2 text-sm text-white hover:bg-white/5 flex items-center gap-2"
+                    >
+                      <User size={14} /> Profile
+                    </button>
                     <button
                       onClick={handleLogout}
                       className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-white/5 flex items-center gap-2"
