@@ -504,7 +504,7 @@ export class PropertyController {
       const analysisRecord = await db
         .insert(schema.propertyAnalyses)
         .values({
-          propertyId: null as any, // For on-demand analysis without property ID
+          // propertyId is omitted for on-demand analysis without property ID
           userId,
           fairMarketValueMin: analysis.fairMarketValueMin,
           fairMarketValueMax: analysis.fairMarketValueMax,

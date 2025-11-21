@@ -25,6 +25,7 @@ import { Button } from "./ui/Button";
 import { Input } from "./ui/Input";
 import { Select } from "./ui/Select";
 import { authService } from "../src/services/auth.service";
+import { propertyService } from "../src/services/property.service";
 
 type DashboardView =
   | "overview"
@@ -51,6 +52,10 @@ export const Dashboard: React.FC<NavigationProps> = ({ onNavigate }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [savedProperties, setSavedProperties] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [analysisResult, setAnalysisResult] = useState<any>(null);
 
   const [selectedYear, setSelectedYear] = useState<string>("2024");
 
@@ -87,13 +92,21 @@ export const Dashboard: React.FC<NavigationProps> = ({ onNavigate }) => {
           if (profile.success && profile.data) {
             setUser(profile.data);
           }
-        } catch (err) {
-          // Use stored user if profile fetch fails
-        }
+        } catch (err) {}
       }
     };
     loadUser();
+    loadSavedProperties();
   }, []);
+
+  const loadSavedProperties = async () => {
+    try {
+      const response = await propertyService.getSavedProperties();
+      if (response.success && response.data) {
+        setSavedProperties(response.data.savedProperties || []);
+      }
+    } catch (err) {}
+  };
 
   useEffect(() => {
     if (contentRef.current) {
@@ -138,11 +151,63 @@ export const Dashboard: React.FC<NavigationProps> = ({ onNavigate }) => {
     setSidebarOpen(false);
   };
 
-  const handleAnalyzeSubmit = () => {
+  const handleAnalyzeSubmit = async () => {
+    if (
+      !formData.place ||
+      !formData.price ||
+      !formData.sqft ||
+      !formData.type
+    ) {
+      setError("Please fill in all required fields");
+      return;
+    }
+
     setCurrentView("analyzing");
-    setTimeout(() => {
-      setCurrentView("result");
-    }, 3000);
+    setError("");
+    setLoading(true);
+
+    try {
+      const placeParts = formData.place.split(",").map((p) => p.trim());
+      const locality = placeParts[0] || "";
+      const city = placeParts[1] || "Mumbai";
+
+      const propertyData = {
+        title: `${formData.type} in ${locality}`,
+        propertyType: formData.type.toLowerCase().replace(/\s+/g, "-") as
+          | "apartment"
+          | "villa"
+          | "penthouse"
+          | "studio"
+          | "plot",
+        location: formData.place,
+        city: city as "Mumbai" | "Delhi" | "Bangalore",
+        locality: locality,
+        price: parseFloat(formData.price) * 10000000,
+        areaSqft: parseFloat(formData.sqft),
+        furnishingStatus: formData.furniture
+          ? (formData.furniture.toLowerCase().replace(/\s+/g, "-") as
+              | "unfurnished"
+              | "semi-furnished"
+              | "fully-furnished")
+          : undefined,
+      };
+
+      const response = await propertyService.analyzeProperty(propertyData);
+
+      if (response.success && response.data) {
+        setAnalysisResult(response.data);
+        setCurrentView("result");
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Analysis failed. Please try again."
+      );
+      setCurrentView("analyze");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleLogout = () => {
@@ -150,26 +215,32 @@ export const Dashboard: React.FC<NavigationProps> = ({ onNavigate }) => {
     onNavigate("home");
   };
 
-  const savedDeals = [
-    {
-      title: "Oberoi Sky City, Borivali",
-      price: "₹3.8 Cr",
-      score: "9.2",
-      date: "2 hrs ago",
-    },
-    {
-      title: "Lodha World Tower, Lower Parel",
-      price: "₹8.5 Cr",
-      score: "7.8",
-      date: "Yesterday",
-    },
-    {
-      title: "Rustomjee Paramount, Khar",
-      price: "₹5.2 Cr",
-      score: "8.5",
-      date: "2 days ago",
-    },
-  ];
+  const formatPrice = (price: number) => {
+    if (price >= 10000000) {
+      return `₹${(price / 10000000).toFixed(2)} Cr`;
+    } else if (price >= 100000) {
+      return `₹${(price / 100000).toFixed(2)} L`;
+    }
+    return `₹${price.toLocaleString()}`;
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffHrs < 24) {
+      return `${diffHrs} hrs ago`;
+    } else if (diffDays === 1) {
+      return "Yesterday";
+    } else if (diffDays < 7) {
+      return `${diffDays} days ago`;
+    } else {
+      return date.toLocaleDateString();
+    }
+  };
 
   const getY = (val: number) => {
     const max = 45000;
@@ -307,29 +378,45 @@ export const Dashboard: React.FC<NavigationProps> = ({ onNavigate }) => {
                   </button>
                 </div>
                 <div className="flex-1 overflow-y-auto">
-                  {savedDeals.map((deal, i) => (
-                    <div
-                      key={i}
-                      className="p-6 border-b border-white/5 hover:bg-white/[0.02] transition-colors cursor-pointer group"
-                    >
-                      <div className="flex justify-between items-start mb-2">
-                        <h4 className="text-white font-medium text-sm group-hover:text-luxury-gold transition-colors">
-                          {deal.title}
-                        </h4>
-                        <span className="bg-luxury-gold/10 text-luxury-gold text-[10px] font-bold px-2 py-0.5 rounded border border-luxury-gold/20">
-                          {deal.score}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <p className="text-gray-400 text-xs font-mono">
-                          {deal.price}
-                        </p>
-                        <p className="text-gray-600 text-[10px] flex items-center gap-1">
-                          <Clock size={10} /> {deal.date}
-                        </p>
-                      </div>
+                  {savedProperties.length === 0 ? (
+                    <div className="text-center py-12 text-white/40">
+                      <p className="text-sm">No saved properties</p>
+                      <button
+                        onClick={() => onNavigate("properties")}
+                        className="mt-4 text-xs text-luxury-gold hover:underline"
+                      >
+                        Browse Properties
+                      </button>
                     </div>
-                  ))}
+                  ) : (
+                    savedProperties.map((saved: any) => (
+                      <div
+                        key={saved.id}
+                        className="p-6 border-b border-white/5 hover:bg-white/[0.02] transition-colors cursor-pointer group"
+                        onClick={() => onNavigate("properties")}
+                      >
+                        <div className="flex justify-between items-start mb-2">
+                          <h4 className="text-white font-medium text-sm group-hover:text-luxury-gold transition-colors">
+                            {saved.property?.title || "Property"}
+                          </h4>
+                          {saved.property?.pricePerSqft && (
+                            <span className="bg-luxury-gold/10 text-luxury-gold text-[10px] font-bold px-2 py-0.5 rounded border border-luxury-gold/20">
+                              ₹{saved.property.pricePerSqft.toLocaleString()}
+                              /sqft
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <p className="text-gray-400 text-xs font-mono">
+                            {formatPrice(saved.property?.price || 0)}
+                          </p>
+                          <p className="text-gray-600 text-[10px] flex items-center gap-1">
+                            <Clock size={10} /> {formatDate(saved.savedAt)}
+                          </p>
+                        </div>
+                      </div>
+                    ))
+                  )}
                   <div className="p-8 text-center border-t border-white/5 bg-gradient-to-b from-transparent to-[#0f0f0f]">
                     <div className="w-10 h-10 mx-auto bg-luxury-gold/10 text-luxury-gold rounded-full flex items-center justify-center mb-3 border border-luxury-gold/20">
                       <Lock size={16} />
@@ -751,16 +838,24 @@ export const Dashboard: React.FC<NavigationProps> = ({ onNavigate }) => {
                   </p>
                 </div>
                 <div className="glass-panel p-6 md:p-10 border border-white/10 rounded-sm shadow-2xl">
+                  {error && (
+                    <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded text-red-400 text-sm">
+                      {error}
+                    </div>
+                  )}
                   <div className="space-y-6">
                     <Input
-                      label="Location"
+                      label="Location (e.g., Bandra West, Mumbai)"
+                      placeholder="Locality, City"
                       value={formData.place}
                       onChange={(e) =>
                         setFormData({ ...formData, place: e.target.value })
                       }
                     />
                     <Input
-                      label="Price"
+                      label="Price (in Crores)"
+                      placeholder="e.g., 5.5"
+                      type="number"
                       value={formData.price}
                       onChange={(e) =>
                         setFormData({ ...formData, price: e.target.value })
@@ -768,33 +863,40 @@ export const Dashboard: React.FC<NavigationProps> = ({ onNavigate }) => {
                     />
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       <Input
-                        label="Sq. Ft."
+                        label="Area (Sq. Ft.)"
+                        placeholder="e.g., 1200"
+                        type="number"
                         value={formData.sqft}
                         onChange={(e) =>
                           setFormData({ ...formData, sqft: e.target.value })
                         }
                       />
                       <Select
-                        label="Type"
+                        label="Property Type"
                         value={formData.type}
                         onChange={(e) =>
                           setFormData({ ...formData, type: e.target.value })
                         }
                         options={[
+                          { value: "", label: "Select Type" },
                           { value: "apartment", label: "Apartment" },
                           { value: "villa", label: "Villa" },
+                          { value: "penthouse", label: "Penthouse" },
+                          { value: "studio", label: "Studio" },
                         ]}
                       />
                     </div>
                     <Select
-                      label="Furnishing"
+                      label="Furnishing Status"
                       value={formData.furniture}
                       onChange={(e) =>
                         setFormData({ ...formData, furniture: e.target.value })
                       }
                       options={[
+                        { value: "", label: "Select Status" },
                         { value: "unfurnished", label: "Unfurnished" },
-                        { value: "fully", label: "Fully Furnished" },
+                        { value: "semi-furnished", label: "Semi-Furnished" },
+                        { value: "fully-furnished", label: "Fully-Furnished" },
                       ]}
                     />
                   </div>
@@ -831,16 +933,40 @@ export const Dashboard: React.FC<NavigationProps> = ({ onNavigate }) => {
               </div>
             )}
 
-            {currentView === "result" && (
+            {currentView === "result" && analysisResult && (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div className="md:col-span-2 bg-[#121212] border border-white/10 rounded-sm p-6 md:p-8 relative overflow-hidden">
-                  <div className="absolute top-0 left-0 w-1 h-full bg-green-500"></div>
+                  <div
+                    className={`absolute top-0 left-0 w-1 h-full ${
+                      analysisResult.analysis.valuationStatus === "undervalued"
+                        ? "bg-green-500"
+                        : analysisResult.analysis.valuationStatus ===
+                          "overvalued"
+                        ? "bg-red-500"
+                        : "bg-yellow-500"
+                    }`}
+                  ></div>
                   <div className="flex justify-between items-start mb-6">
                     <h2 className="text-2xl font-serif text-white">
-                      Good Deal
+                      {analysisResult.analysis.valuationStatus === "undervalued"
+                        ? "Good Deal"
+                        : analysisResult.analysis.valuationStatus ===
+                          "overvalued"
+                        ? "Overpriced"
+                        : "Fair Price"}
                     </h2>
-                    <div className="text-green-400 text-xs font-bold uppercase border border-green-500/20 px-2 py-1 rounded bg-green-500/10">
-                      Undervalued
+                    <div
+                      className={`text-xs font-bold uppercase border px-2 py-1 rounded ${
+                        analysisResult.analysis.valuationStatus ===
+                        "undervalued"
+                          ? "text-green-400 border-green-500/20 bg-green-500/10"
+                          : analysisResult.analysis.valuationStatus ===
+                            "overvalued"
+                          ? "text-red-400 border-red-500/20 bg-red-500/10"
+                          : "text-yellow-400 border-yellow-500/20 bg-yellow-500/10"
+                      }`}
+                    >
+                      {analysisResult.analysis.valuationStatus}
                     </div>
                   </div>
                   <div className="mb-8">
@@ -848,31 +974,62 @@ export const Dashboard: React.FC<NavigationProps> = ({ onNavigate }) => {
                       Est. Fair Value
                     </p>
                     <p className="text-3xl md:text-4xl font-serif text-white">
-                      ₹4.8 - 5.1 Cr
+                      {formatPrice(analysisResult.analysis.fairMarketValue.min)}{" "}
+                      -{" "}
+                      {formatPrice(analysisResult.analysis.fairMarketValue.max)}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-2">
+                      Confidence Score:{" "}
+                      {(analysisResult.analysis.confidenceScore * 100).toFixed(
+                        0
+                      )}
+                      %
                     </p>
                   </div>
                   <div className="bg-white/5 rounded-sm p-4 space-y-4 mb-8">
-                    <div className="flex gap-3">
-                      <CheckCircle
-                        size={16}
-                        className="text-green-500 shrink-0"
-                      />
-                      <div>
-                        <h4 className="text-white text-sm font-bold">
-                          Price Advantage
-                        </h4>
-                        <p className="text-gray-400 text-xs mt-1">
-                          8% below market average.
-                        </p>
+                    <p className="text-white text-sm">
+                      {analysisResult.analysis.summary}
+                    </p>
+                    {analysisResult.analysis.priceAdvantagePercent && (
+                      <div className="flex gap-3 pt-4 border-t border-white/10">
+                        <CheckCircle
+                          size={16}
+                          className={
+                            analysisResult.analysis.priceAdvantagePercent > 0
+                              ? "text-green-500"
+                              : "text-red-500"
+                          }
+                        />
+                        <div>
+                          <h4 className="text-white text-sm font-bold">
+                            Price{" "}
+                            {analysisResult.analysis.priceAdvantagePercent > 0
+                              ? "Advantage"
+                              : "Premium"}
+                          </h4>
+                          <p className="text-gray-400 text-xs mt-1">
+                            {Math.abs(
+                              analysisResult.analysis.priceAdvantagePercent
+                            ).toFixed(1)}
+                            %{" "}
+                            {analysisResult.analysis.priceAdvantagePercent > 0
+                              ? "below"
+                              : "above"}{" "}
+                            market average
+                          </p>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                   <div className="flex gap-4">
                     <Button
-                      onClick={() => setCurrentView("overview")}
+                      onClick={() => {
+                        setCurrentView("overview");
+                        loadSavedProperties();
+                      }}
                       className="flex-1 justify-center"
                     >
-                      Save
+                      Done
                     </Button>
                     <button
                       onClick={() => setCurrentView("analyze")}
@@ -883,14 +1040,132 @@ export const Dashboard: React.FC<NavigationProps> = ({ onNavigate }) => {
                   </div>
                 </div>
                 <div className="space-y-6">
-                  <div className="bg-[#121212] border border-white/10 p-6 rounded-sm">
-                    <h4 className="text-white text-sm font-bold mb-2">
-                      Risk Factors
-                    </h4>
-                    <p className="text-gray-400 text-xs">
-                      Building age &gt; 15 years.
-                    </p>
-                  </div>
+                  {analysisResult.analysis.metrics && (
+                    <div className="bg-[#121212] border border-white/10 p-6 rounded-sm">
+                      <h4 className="text-white text-sm font-bold mb-4">
+                        Key Metrics
+                      </h4>
+                      <div className="space-y-3">
+                        {analysisResult.analysis.metrics.rentalYieldPercent && (
+                          <div className="flex justify-between">
+                            <span className="text-gray-400 text-xs">
+                              Rental Yield
+                            </span>
+                            <span className="text-white text-xs font-bold">
+                              {analysisResult.analysis.metrics.rentalYieldPercent.toFixed(
+                                1
+                              )}
+                              %
+                            </span>
+                          </div>
+                        )}
+                        {analysisResult.analysis.metrics
+                          .projected5yGrowthPercent && (
+                          <div className="flex justify-between">
+                            <span className="text-gray-400 text-xs">
+                              5Y Growth
+                            </span>
+                            <span className="text-luxury-gold text-xs font-bold">
+                              +
+                              {analysisResult.analysis.metrics.projected5yGrowthPercent.toFixed(
+                                0
+                              )}
+                              %
+                            </span>
+                          </div>
+                        )}
+                        {analysisResult.analysis.metrics.livabilityScore && (
+                          <div className="flex justify-between">
+                            <span className="text-gray-400 text-xs">
+                              Livability
+                            </span>
+                            <span className="text-white text-xs font-bold">
+                              {analysisResult.analysis.metrics.livabilityScore.toFixed(
+                                1
+                              )}
+                              /10
+                            </span>
+                          </div>
+                        )}
+                        {analysisResult.analysis.metrics
+                          .infrastructureScore && (
+                          <div className="flex justify-between">
+                            <span className="text-gray-400 text-xs">
+                              Infrastructure
+                            </span>
+                            <span className="text-white text-xs font-bold">
+                              {analysisResult.analysis.metrics.infrastructureScore.toFixed(
+                                1
+                              )}
+                              /10
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {analysisResult.analysis.riskFactors &&
+                    analysisResult.analysis.riskFactors.length > 0 && (
+                      <div className="bg-[#121212] border border-white/10 p-6 rounded-sm">
+                        <h4 className="text-white text-sm font-bold mb-3">
+                          Risk Factors
+                        </h4>
+                        <div className="space-y-2">
+                          {analysisResult.analysis.riskFactors
+                            .slice(0, 3)
+                            .map((risk: any, i: number) => (
+                              <div key={i} className="flex gap-2">
+                                <span
+                                  className={`text-xs font-bold ${
+                                    risk.severity === "high"
+                                      ? "text-red-400"
+                                      : risk.severity === "medium"
+                                      ? "text-yellow-400"
+                                      : "text-gray-400"
+                                  }`}
+                                >
+                                  •
+                                </span>
+                                <p className="text-gray-400 text-xs flex-1">
+                                  {risk.description}
+                                </p>
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    )}
+
+                  {analysisResult.analysis.growthFactors &&
+                    analysisResult.analysis.growthFactors.length > 0 && (
+                      <div className="bg-[#121212] border border-white/10 p-6 rounded-sm">
+                        <h4 className="text-white text-sm font-bold mb-3">
+                          Growth Factors
+                        </h4>
+                        <div className="space-y-2">
+                          {analysisResult.analysis.growthFactors
+                            .slice(0, 3)
+                            .map((growth: any, i: number) => (
+                              <div key={i} className="flex gap-2">
+                                <span
+                                  className={`text-xs font-bold ${
+                                    growth.impact === "high"
+                                      ? "text-green-400"
+                                      : growth.impact === "medium"
+                                      ? "text-luxury-gold"
+                                      : "text-gray-400"
+                                  }`}
+                                >
+                                  ↑
+                                </span>
+                                <p className="text-gray-400 text-xs flex-1">
+                                  {growth.description}
+                                </p>
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    )}
                 </div>
               </div>
             )}

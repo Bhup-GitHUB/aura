@@ -53,9 +53,9 @@ export const properties = sqliteTable("properties", {
 
 export const propertyAnalyses = sqliteTable("property_analyses", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  propertyId: integer("property_id")
-    .notNull()
-    .references(() => properties.id, { onDelete: "cascade" }),
+  propertyId: integer("property_id").references(() => properties.id, {
+    onDelete: "cascade",
+  }),
   userId: integer("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),

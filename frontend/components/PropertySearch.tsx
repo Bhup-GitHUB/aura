@@ -313,8 +313,7 @@ export const PropertySearch: React.FC<NavigationProps> = ({ onNavigate }) => {
                   variant="outline"
                   className="w-full"
                   onClick={() => {
-                    // Could navigate to property detail page
-                    console.log('View property:', property.id);
+                    onNavigate('dashboard');
                   }}
                 >
                   View Details

@@ -10,5 +10,7 @@ export const API_ENDPOINTS = {
   refreshToken: '/api/auth/refresh',
   properties: '/api/properties',
   savedProperties: '/api/properties/saved',
+  analyzeProperty: '/api/properties/analyze-ai',
+  quickEstimate: '/api/properties/quick-estimate',
 };
 

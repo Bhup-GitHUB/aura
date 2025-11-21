@@ -80,7 +80,6 @@ export const authService = {
       throw new Error(result.message || 'Login failed');
     }
 
-    // Store token in localStorage
     if (result.data?.token) {
       localStorage.setItem('auth_token', result.data.token);
       localStorage.setItem('user', JSON.stringify(result.data.user));
@@ -147,7 +146,6 @@ export const authService = {
       throw new Error(result.error?.message || 'Failed to update profile');
     }
 
-    // Update stored user data
     if (result.data) {
       const currentUser = this.getUser();
       if (currentUser) {

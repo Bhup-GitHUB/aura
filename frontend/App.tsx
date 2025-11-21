@@ -67,7 +67,6 @@ const App: React.FC = () => {
   }, [currentPage]);
 
   useEffect(() => {
-    // Protect authenticated routes - redirect to login if not authenticated
     const protectedPages: Page[] = ["dashboard", "profile", "properties"];
     if (
       protectedPages.includes(currentPage) &&

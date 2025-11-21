@@ -37,7 +37,7 @@ interface PropertyAnalysisResult {
 export class GeminiService {
   private apiKey: string;
   private baseUrl = "https://generativelanguage.googleapis.com/v1beta/models";
-  private model = "gemini-2.5-flash";
+  private model = "gemini-2.0-flash-001"; // Using specific version
 
   constructor(apiKey: string) {
     this.apiKey = apiKey;
@@ -139,16 +139,47 @@ Respond ONLY with valid JSON in this exact format (no markdown, no code blocks):
 
       if (!response.ok) {
         const errorText = await response.text();
+        console.error("Gemini API error:", response.status, errorText);
         throw new Error(`Gemini API error: ${response.status} - ${errorText}`);
       }
 
-      const data = (await response.json()) as GeminiResponse;
+      const data = (await response.json()) as any;
 
-      if (!data.candidates || data.candidates.length === 0) {
-        throw new Error("No response from Gemini API");
+      // Check for API errors in response
+      if (data.error) {
+        throw new Error(
+          `Gemini API error: ${
+            data.error.message || JSON.stringify(data.error)
+          }`
+        );
       }
 
-      const textResponse = data.candidates[0].content.parts[0].text;
+      // Check if candidates exist and have content
+      if (!data.candidates || data.candidates.length === 0) {
+        console.error("No candidates in response:", JSON.stringify(data));
+        throw new Error("No response from Gemini API - empty candidates");
+      }
+
+      const candidate = data.candidates[0];
+      if (
+        !candidate ||
+        !candidate.content ||
+        !candidate.content.parts ||
+        candidate.content.parts.length === 0
+      ) {
+        console.error(
+          "Invalid candidate structure:",
+          JSON.stringify(candidate)
+        );
+        throw new Error("Invalid response structure from Gemini API");
+      }
+
+      const textResponse = candidate.content.parts[0].text;
+
+      if (!textResponse) {
+        console.error("No text in response:", JSON.stringify(candidate));
+        throw new Error("No text content in Gemini API response");
+      }
 
       // Clean up the response (remove markdown code blocks if present)
       let cleanedResponse = textResponse.trim();
@@ -162,16 +193,29 @@ Respond ONLY with valid JSON in this exact format (no markdown, no code blocks):
         cleanedResponse = cleanedResponse.replace(/\n?```$/g, "");
       }
 
-      const analysisResult = JSON.parse(
-        cleanedResponse
-      ) as PropertyAnalysisResult;
+      // Try to parse JSON
+      let analysisResult: PropertyAnalysisResult;
+      try {
+        analysisResult = JSON.parse(cleanedResponse) as PropertyAnalysisResult;
+      } catch (parseError) {
+        console.error("JSON parse error:", parseError);
+        console.error("Response text:", cleanedResponse);
+        throw new Error(
+          `Failed to parse Gemini response as JSON: ${
+            parseError instanceof Error ? parseError.message : "Unknown error"
+          }`
+        );
+      }
 
       // Validate the result has required fields
       if (
-        !analysisResult.fairMarketValueMin ||
-        !analysisResult.fairMarketValueMax
+        typeof analysisResult.fairMarketValueMin !== "number" ||
+        typeof analysisResult.fairMarketValueMax !== "number"
       ) {
-        throw new Error("Invalid analysis result from Gemini");
+        console.error("Invalid analysis result:", analysisResult);
+        throw new Error(
+          "Invalid analysis result from Gemini - missing required fields"
+        );
       }
 
       return analysisResult;
@@ -220,8 +264,37 @@ Respond ONLY with JSON (no markdown):
         }
       );
 
-      const data = (await response.json()) as GeminiResponse;
-      let textResponse = data.candidates[0].content.parts[0].text.trim();
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Gemini API error: ${response.status} - ${errorText}`);
+      }
+
+      const data = (await response.json()) as any;
+
+      // Check for API errors
+      if (data.error) {
+        throw new Error(
+          `Gemini API error: ${
+            data.error.message || JSON.stringify(data.error)
+          }`
+        );
+      }
+
+      // Validate response structure
+      if (!data.candidates || data.candidates.length === 0) {
+        throw new Error("No response from Gemini API");
+      }
+
+      const candidate = data.candidates[0];
+      if (!candidate?.content?.parts || candidate.content.parts.length === 0) {
+        throw new Error("Invalid response structure from Gemini API");
+      }
+
+      let textResponse = candidate.content.parts[0].text?.trim();
+
+      if (!textResponse) {
+        throw new Error("No text content in Gemini API response");
+      }
 
       // Clean markdown
       textResponse = textResponse

@@ -215,5 +215,46 @@ export const propertyService = {
 
     return result;
   },
+
+  async analyzeProperty(data: CreatePropertyData): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.analyzeProperty}`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(data),
+    });
+
+    const result = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(result.error?.message || 'Failed to analyze property');
+    }
+
+    return result;
+  },
+
+  async quickPriceEstimate(params: { city: string; locality: string; areaSqft: number; propertyType: string }): Promise<any> {
+    const queryParams = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        queryParams.append(key, value.toString());
+      }
+    });
+
+    const response = await fetch(
+      `${API_BASE_URL}${API_ENDPOINTS.quickEstimate}?${queryParams.toString()}`,
+      {
+        method: 'GET',
+        headers: getAuthHeaders(),
+      }
+    );
+
+    const result = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(result.error?.message || 'Failed to get price estimate');
+    }
+
+    return result;
+  },
 };
 
