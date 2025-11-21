@@ -4,41 +4,47 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Aura | The AI Real Estate Agent</title>
-    <meta name="description" content="Experience the future of luxury real estate automation." />
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    
+    <meta
+      name="description"
+      content="Experience the future of luxury real estate automation."
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <script>
       tailwind.config = {
         theme: {
           extend: {
             colors: {
               luxury: {
-                black: '#080808',
-                dark: '#121212',
-                charcoal: '#1A1A1A',
-                gold: '#D9A441',
-                goldHover: '#C29033',
-                silver: '#E5E5E5',
-                text: '#9CA3AF'
-              }
+                black: "#080808",
+                dark: "#121212",
+                charcoal: "#1A1A1A",
+                gold: "#D9A441",
+                goldHover: "#C29033",
+                silver: "#E5E5E5",
+                text: "#9CA3AF",
+              },
             },
             fontFamily: {
-              serif: ['"Playfair Display"', 'serif'],
-              sans: ['"Manrope"', 'sans-serif'],
+              serif: ['"Playfair Display"', "serif"],
+              sans: ['"Manrope"', "sans-serif"],
             },
             backgroundImage: {
-              'gradient-luxury': 'linear-gradient(to bottom, #080808, #121212)',
-            }
-          }
-        }
-      }
+              "gradient-luxury": "linear-gradient(to bottom, #080808, #121212)",
+            },
+          },
+        },
+      };
     </script>
-    
+
     <style>
       ::-webkit-scrollbar {
         width: 6px;
@@ -51,9 +57,9 @@
         border-radius: 3px;
       }
       ::-webkit-scrollbar-thumb:hover {
-        background: #D9A441;
+        background: #d9a441;
       }
-      
+
       body {
         background-color: #080808;
         color: #fff;
@@ -83,11 +89,37 @@
         opacity: 0.04;
         background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
       }
+
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .animate-fade-in {
+        animation: fade-in 0.3s ease-out;
+      }
     </style>
-<link rel="stylesheet" href="/index.css">
-</head>
+    <script type="importmap">
+      {
+        "imports": {
+          "react": "https://esm.sh/react@^19.2.0",
+          "react-dom/": "https://esm.sh/react-dom@^19.2.0/",
+          "react/": "https://esm.sh/react@^19.2.0/",
+          "lucide-react": "https://esm.sh/lucide-react@^0.554.0",
+          "gsap/": "https://esm.sh/gsap@^3.13.0/",
+          "gsap": "https://esm.sh/gsap@^3.13.0"
+        }
+      }
+    </script>
+  </head>
   <body>
     <div id="root"></div>
-  <script type="module" src="/index.tsx"></script>
-</body>
+    <script type="module" src="/index.tsx"></script>
+  </body>
 </html>

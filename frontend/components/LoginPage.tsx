@@ -44,8 +44,8 @@ export const LoginPage: React.FC<NavigationProps> = ({ onNavigate }) => {
           </div>
 
           <form onSubmit={(e) => e.preventDefault()} className="space-y-2">
-            <Input label="Email Address" type="email" defaultValue="demo@aura.tech" />
-            <Input label="Password" type="password" defaultValue="password" />
+            <Input label="Email Address" type="email" />
+            <Input label="Password" type="password" />
             
             <div className="flex justify-end mb-8">
               <a href="#" className="text-xs text-white/40 hover:text-luxury-gold transition-colors">Forgot Password?</a>

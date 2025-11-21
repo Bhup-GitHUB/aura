@@ -33,9 +33,10 @@ export const Footer: React.FC = () => {
         </div>
 
         <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
-          <p className="text-xs text-white/20">© 2024 Aura Estate AI. All rights reserved.</p>
+          <p className="text-xs text-white/20">© 2024 Aura MarketVision. All rights reserved.</p>
           <div className="flex gap-8">
             <a href="https://bhupeshkumar.tech" target="_blank" rel="noopener noreferrer" className="text-xs text-luxury-gold hover:text-white transition-colors tracking-widest uppercase font-bold border-b border-luxury-gold/30 hover:border-white pb-1">bhupeshkumar.tech</a>
+            <a href="https://aura.bhupeshkumar.tech" target="_blank" rel="noopener noreferrer" className="text-xs text-luxury-gold hover:text-white transition-colors tracking-widest uppercase font-bold border-b border-luxury-gold/30 hover:border-white pb-1">aura.bhupeshkumar.tech</a>
           </div>
         </div>
       </div>

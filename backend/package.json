@@ -1,0 +1,21 @@
+{
+  "name": "backend",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy --minify",
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings"
+  },
+  "dependencies": {
+    "@hono/zod-validator": "^0.7.5",
+    "bcryptjs": "^3.0.3",
+    "drizzle-orm": "^0.44.7",
+    "hono": "^4.10.6",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "drizzle-kit": "^0.31.7",
+    "wrangler": "^4.4.0"
+  }
+}

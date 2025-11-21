@@ -55,6 +55,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     document.documentElement.style.scrollBehavior = "smooth";
+
     gsap.to("body", { opacity: 1, duration: 0.8, ease: "power2.in" });
   }, []);
 
@@ -95,8 +96,6 @@ const App: React.FC = () => {
                   index={index}
                 />
               ))}
-
-              <Pricing />
             </div>
 
             <Testimonials />
