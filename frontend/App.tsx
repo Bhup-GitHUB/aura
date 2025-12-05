@@ -55,6 +55,7 @@ const features: PropertyFeature[] = [
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>("home");
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   useEffect(() => {
     document.documentElement.style.scrollBehavior = "smooth";
@@ -76,9 +77,52 @@ const App: React.FC = () => {
     }
   }, [currentPage]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollable =
+        document.documentElement.scrollHeight - window.innerHeight;
+      if (scrollable <= 0) {
+        setScrollProgress(0);
+        return;
+      }
+
+      const progress = (window.scrollY / scrollable) * 100;
+      setScrollProgress(progress);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <div className="antialiased bg-luxury-black text-luxury-text selection:bg-luxury-gold selection:text-luxury-black font-sans min-h-screen flex flex-col">
+    <div className="antialiased bg-luxury-black text-luxury-text selection:bg-luxury-gold selection:text-luxury-black font-sans min-h-screen flex flex-col relative overflow-x-hidden">
       <div className="noise-overlay"></div>
+      <div className="fixed inset-0 -z-20 bg-gradient-to-b from-[#050506] via-[#0b0c11] to-[#040405]" />
+      <div
+        className="fixed inset-0 -z-10 opacity-[0.22]"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle at 20% 20%, rgba(217,164,65,0.18) 0, transparent 32%), radial-gradient(circle at 80% 10%, rgba(255,255,255,0.08) 0, transparent 28%), radial-gradient(circle at 70% 75%, rgba(217,164,65,0.12) 0, transparent 30%), linear-gradient(115deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.04) 40%, rgba(0,0,0,0.15) 100%)",
+        }}
+      />
+      <div
+        className="fixed inset-0 -z-[5] pointer-events-none opacity-[0.08]"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px)",
+          backgroundSize: "120px 120px",
+          maskImage:
+            "radial-gradient(circle at center, rgba(0,0,0,1), transparent 70%)",
+        }}
+      />
+      <div className="fixed top-0 left-0 right-0 h-1 bg-white/5 z-[60] overflow-hidden">
+        <div
+          className="h-full bg-gradient-to-r from-luxury-gold via-white to-luxury-gold transition-[width] duration-200"
+          style={{ width: `${scrollProgress}%` }}
+        />
+      </div>
 
       {currentPage === "home" && <Navbar onNavigate={setCurrentPage} />}
 
@@ -111,6 +155,7 @@ const App: React.FC = () => {
               ))}
             </div>
 
+            <Pricing />
             <Testimonials />
             <CtaBanner />
           </>

@@ -29,7 +29,7 @@ export const Navbar: React.FC<NavigationProps> = ({ onNavigate }) => {
     <nav 
       ref={navRef}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        isScrolled ? 'bg-luxury-black/90 backdrop-blur-md py-4 border-b border-white/5' : 'bg-transparent py-8'
+        isScrolled ? 'bg-luxury-black/90 backdrop-blur-md py-4 border-b border-white/5 shadow-[0_10px_40px_rgba(0,0,0,0.35)]' : 'bg-transparent py-8'
       }`}
     >
       <div className="max-w-[1600px] mx-auto px-6 flex justify-between items-center">

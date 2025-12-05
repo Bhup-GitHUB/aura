@@ -29,8 +29,24 @@ export const Testimonials: React.FC = () => {
   return (
     <section ref={containerRef} className="py-32 bg-[#080808] border-t border-white/5 relative overflow-hidden">
       <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03]"></div>
-      
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-transparent opacity-[0.04]" />
+      <div className="absolute -right-16 top-20 w-72 h-72 bg-luxury-gold/10 blur-[120px]" />
+      <div className="absolute -left-24 bottom-10 w-64 h-64 bg-white/10 blur-[120px]" />
       <div className="container mx-auto px-6 relative z-10">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-14">
+          <div>
+            <span className="text-luxury-gold text-xs font-bold tracking-[0.3em] uppercase mb-3 block">
+              Social Proof
+            </span>
+            <h2 className="text-4xl md:text-5xl font-serif text-white">
+              Trusted by the sharpest dealmakers.
+            </h2>
+          </div>
+          <div className="text-white/50 text-sm max-w-md">
+            Signals that convert into decisions, backed by real investor wins and
+            on-ground brokers who benchmark every number we publish.
+          </div>
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
           
           <div className="testimonial-item">

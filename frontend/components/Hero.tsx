@@ -13,6 +13,7 @@ export const Hero: React.FC = () => {
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
+  const chipRefs = useRef<HTMLDivElement[]>([]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -59,12 +60,29 @@ export const Hero: React.FC = () => {
           }
         });
       }
+
+      if (chipRefs.current.length) {
+        gsap.to(chipRefs.current, {
+          y: "+=12",
+          opacity: 1,
+          duration: 3,
+          ease: "sine.inOut",
+          repeat: -1,
+          yoyo: true,
+          stagger: 0.2,
+        });
+      }
     }, containerRef);
 
     return () => ctx.revert();
   }, []);
 
   const partners = ["Economic Times", "LiveMint", "MoneyControl", "CNBC TV18", "Forbes India"];
+  const floatingSignals = [
+    { title: "Fair Value Δ", value: "-8.2%", meta: "Vs asking" },
+    { title: "Livability", value: "9.1", meta: "Top 3 micro-markets" },
+    { title: "Yield", value: "3.5%", meta: "Stabilized" },
+  ];
 
   return (
     <section ref={containerRef} className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden bg-luxury-black pt-24 pb-12 md:pt-32">
@@ -74,7 +92,11 @@ export const Hero: React.FC = () => {
         <div className="absolute inset-0 bg-luxury-black/60"></div>
         <div className="absolute inset-0 bg-gradient-to-b from-luxury-black/40 via-transparent to-luxury-black"></div>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_10%,_#080808_120%)] opacity-90"></div>
+        <div className="absolute inset-0 mix-blend-screen opacity-[0.08]" style={{ backgroundImage: "linear-gradient(90deg, rgba(255,255,255,0.15) 1px, transparent 1px), linear-gradient(rgba(255,255,255,0.12) 1px, transparent 1px)", backgroundSize: "140px 140px" }} />
       </div>
+
+      <div className="absolute -right-24 top-24 w-64 h-64 bg-luxury-gold/10 blur-[90px] rounded-full pointer-events-none" />
+      <div className="absolute -left-24 bottom-10 w-72 h-72 bg-white/10 blur-[110px] rounded-full pointer-events-none" />
 
       <div className="relative z-10 container mx-auto px-4 md:px-6 flex flex-col items-center text-center max-w-7xl">
         
@@ -87,7 +109,7 @@ export const Hero: React.FC = () => {
             </div>
         </div>
 
-        <h1 ref={titleRef} className="text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-serif text-white leading-[1.05] md:leading-[0.95] mb-8 md:mb-12 tracking-tight">
+        <h1 ref={titleRef} className="text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-serif text-white leading-[1.05] md:leading-[0.95] mb-8 md:mb-12 tracking-tight drop-shadow-[0_10px_40px_rgba(0,0,0,0.35)]">
           The truth behind <br />
           <span className="italic font-light text-white/70 bg-clip-text bg-gradient-to-b from-white to-white/40">every price tag.</span>
         </h1>
@@ -108,7 +130,34 @@ export const Hero: React.FC = () => {
           </button>
         </div>
 
-        <div ref={logoRef} className="mt-20 md:mt-32 w-full max-w-4xl px-4">
+        <div className="relative w-full max-w-6xl mt-10 md:mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
+          {floatingSignals.map((signal, index) => (
+            <div
+              key={signal.title}
+              ref={(el) => {
+                if (el) {
+                  chipRefs.current[index] = el;
+                }
+              }}
+              className="floating-chip glass-panel border border-white/10 rounded-xl p-5 text-left shadow-xl backdrop-blur-xl bg-white/5"
+            >
+              <p className="text-[11px] uppercase tracking-[0.24em] text-white/60 mb-2">
+                {signal.title}
+              </p>
+              <div className="flex items-baseline gap-2">
+                <span className="text-3xl font-serif text-white">
+                  {signal.value}
+                </span>
+                <span className="text-xs text-white/50">{signal.meta}</span>
+              </div>
+              <div className="mt-3 h-1.5 rounded-full bg-white/10 overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-luxury-gold to-white/80 w-[78%]" />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div ref={logoRef} className="mt-16 md:mt-24 w-full max-w-4xl px-4">
           <p className="text-[10px] text-white/30 uppercase tracking-[0.3em] mb-8">Trusted Intelligence For</p>
           <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
             {partners.map((partner, index) => (

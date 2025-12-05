@@ -55,25 +55,46 @@ export const Pricing: React.FC = () => {
   }, []);
 
   return (
-    <section ref={containerRef} className="py-32 bg-white relative">
-      <div className="container mx-auto px-6">
-        <div className="text-center mb-20">
-          <span className="text-luxury-gold text-xs font-bold tracking-[0.3em] uppercase mb-4 block">Membership</span>
-          <h2 className="text-4xl md:text-5xl font-serif text-luxury-black">Unlock MarketVision.</h2>
+    <section
+      ref={containerRef}
+      className="py-32 bg-gradient-to-b from-white via-white to-[#f7f7f7] relative overflow-hidden"
+    >
+      <div className="absolute -left-32 top-10 w-64 h-64 bg-luxury-gold/10 blur-[120px]" />
+      <div className="absolute -right-16 bottom-10 w-72 h-72 bg-[#0b0b0f]/5 blur-[110px]" />
+      <div
+        className="absolute inset-0 pointer-events-none opacity-[0.14]"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(0,0,0,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px)",
+          backgroundSize: "140px 140px",
+        }}
+      />
+      <div className="container mx-auto px-6 relative">
+        <div className="text-center mb-20 max-w-3xl mx-auto">
+          <span className="text-luxury-gold text-xs font-bold tracking-[0.3em] uppercase mb-4 block">
+            Membership
+          </span>
+          <h2 className="text-4xl md:text-5xl font-serif text-luxury-black">
+            Unlock MarketVision.
+          </h2>
+          <p className="text-gray-500 mt-4">
+            Pick a plan that matches the depth of intelligence you need—from
+            quick checks to full-stack market command.
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {tiers.map((tier, index) => (
             <div 
               key={index} 
-              className={`pricing-card relative flex flex-col p-8 md:p-12 rounded-sm transition-all duration-500 group ${
+              className={`pricing-card relative flex flex-col p-8 md:p-12 rounded-2xl transition-all duration-500 group ${
                 tier.highlight 
-                  ? 'bg-luxury-black text-white shadow-2xl scale-105 z-10' 
-                  : 'bg-gray-50 text-luxury-black border border-gray-200 hover:border-luxury-gold/30'
+                  ? 'bg-luxury-black text-white shadow-2xl scale-105 z-10 border border-white/10'
+                  : 'bg-white text-luxury-black border border-gray-200 hover:border-luxury-gold/40 shadow-lg'
               }`}
             >
               {tier.highlight && (
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-luxury-gold text-luxury-black text-[10px] font-bold uppercase tracking-widest py-1 px-4 rounded-full flex items-center gap-1">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-luxury-gold text-luxury-black text-[10px] font-bold uppercase tracking-widest py-1 px-4 rounded-full flex items-center gap-1 shadow-[0_10px_30px_rgba(217,164,65,0.35)]">
                   <Star size={10} fill="currentColor" /> Most Popular
                 </div>
               )}
@@ -100,7 +121,10 @@ export const Pricing: React.FC = () => {
 
               <Button 
                 variant={tier.highlight ? 'primary' : 'outline'} 
-                className={`w-full justify-center ${!tier.highlight && 'border-gray-300 text-luxury-black hover:bg-luxury-black hover:text-white hover:border-luxury-black'}`}
+                className={`w-full justify-center ${
+                  !tier.highlight &&
+                  'border-gray-300 text-luxury-black hover:bg-luxury-black hover:text-white hover:border-luxury-black'
+                }`}
               >
                 {tier.highlight ? 'Start Free Trial' : 'Get Started'}
               </Button>

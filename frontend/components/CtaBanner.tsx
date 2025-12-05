@@ -34,9 +34,12 @@ export const CtaBanner: React.FC = () => {
     <section ref={sectionRef} className="relative py-32 px-6 bg-luxury-black overflow-hidden">
       <div className="absolute inset-0 w-full h-full opacity-30 bg-cover bg-fixed bg-center" 
            style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=2671&auto=format&fit=crop")' }} />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/80" />
+      <div className="absolute -left-10 -top-10 w-72 h-72 bg-luxury-gold/10 blur-[110px]" />
+      <div className="absolute -right-10 bottom-0 w-60 h-60 bg-white/10 blur-[120px]" />
       
       <div ref={cardRef} className="relative z-10 container mx-auto">
-        <div className="glass-panel p-12 md:p-24 rounded-sm border border-white/10 flex flex-col md:flex-row items-center justify-between gap-12">
+        <div className="glass-panel p-12 md:p-24 rounded-2xl border border-white/10 flex flex-col md:flex-row items-center justify-between gap-12 shadow-[0_25px_80px_rgba(0,0,0,0.55)]">
           <div className="max-w-2xl">
             <h2 className="text-4xl md:text-5xl font-serif text-white mb-6">
               Invest with <span className="text-luxury-gold italic">absolute certainty.</span>
