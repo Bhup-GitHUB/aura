@@ -10,6 +10,7 @@ import {
 } from "../types";
 import { createDb } from "../db";
 import { schema } from "../db";
+import { recordApiUsage } from "../utils/usage";
 
 export class PropertyController {
   static async createProperty(
@@ -525,6 +526,8 @@ export class PropertyController {
         })
         .returning();
 
+      await recordApiUsage(db, userId, "/api/properties/analyze-ai");
+
       const response: ApiResponse = {
         success: true,
         message: "Property analyzed successfully",
@@ -575,7 +578,9 @@ export class PropertyController {
     }
   }
 
-  static async quickPriceEstimate(c: Context<{ Bindings: Bindings }>) {
+  static async quickPriceEstimate(
+    c: Context<{ Bindings: Bindings; Variables: { userId: number } }>
+  ) {
     try {
       const { city, locality, areaSqft, propertyType } = c.req.query();
 
@@ -589,6 +594,7 @@ export class PropertyController {
         throw new Error("Gemini API key not configured");
       }
 
+      const db = createDb(c.env.DB);
       const geminiService = new GeminiService(c.env.GEMINI_API_KEY);
 
       const estimate = await geminiService.getQuickPriceEstimate(
@@ -617,6 +623,11 @@ export class PropertyController {
           },
         },
       };
+
+      const userId = c.get("userId");
+      if (userId) {
+        await recordApiUsage(db, userId, "/api/properties/quick-estimate");
+      }
 
       return c.json(response, 200);
     } catch (error) {

@@ -4,7 +4,7 @@ import { Button } from './ui/Button';
 import { Input } from './ui/Input';
 import { Select } from './ui/Select';
 import { NavigationProps } from '../types';
-import { ArrowLeft, Search, MapPin, Home, Filter, X } from 'lucide-react';
+import { ArrowLeft, Search, MapPin, Home, Filter, X, Heart, HeartOff, CheckCircle2 } from 'lucide-react';
 import { propertyService } from '../src/services/property.service';
 
 export const PropertySearch: React.FC<NavigationProps> = ({ onNavigate }) => {
@@ -14,6 +14,9 @@ export const PropertySearch: React.FC<NavigationProps> = ({ onNavigate }) => {
   const [properties, setProperties] = useState<any[]>([]);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [error, setError] = useState('');
+  const [savedIds, setSavedIds] = useState<Set<number>>(new Set());
+  const [savingId, setSavingId] = useState<number | null>(null);
+  const [statusMessage, setStatusMessage] = useState<string>('');
 
   const [searchParams, setSearchParams] = useState({
     city: '',
@@ -40,6 +43,7 @@ export const PropertySearch: React.FC<NavigationProps> = ({ onNavigate }) => {
 
   useEffect(() => {
     searchProperties();
+    loadSaved();
   }, []);
 
   const searchProperties = async () => {
@@ -67,6 +71,45 @@ export const PropertySearch: React.FC<NavigationProps> = ({ onNavigate }) => {
       setError(err instanceof Error ? err.message : 'Failed to search properties');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadSaved = async () => {
+    try {
+      const response = await propertyService.getSavedProperties();
+      if (response.success && response.data?.savedProperties) {
+        const ids = new Set<number>(
+          response.data.savedProperties.map((item: any) => item.propertyId)
+        );
+        setSavedIds(ids);
+      }
+    } catch (err) {
+      // fail silently for saved list to avoid blocking search
+    }
+  };
+
+  const toggleSave = async (propertyId: number) => {
+    setError('');
+    setStatusMessage('');
+    setSavingId(propertyId);
+    try {
+      if (savedIds.has(propertyId)) {
+        await propertyService.removeSavedProperty(propertyId);
+        const next = new Set(savedIds);
+        next.delete(propertyId);
+        setSavedIds(next);
+        setStatusMessage('Removed from saved');
+      } else {
+        await propertyService.saveProperty(propertyId);
+        const next = new Set(savedIds);
+        next.add(propertyId);
+        setSavedIds(next);
+        setStatusMessage('Saved to your deals');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unable to update saved list');
+    } finally {
+      setSavingId(null);
     }
   };
 
@@ -255,6 +298,12 @@ export const PropertySearch: React.FC<NavigationProps> = ({ onNavigate }) => {
             {error}
           </div>
         )}
+        {statusMessage && (
+          <div className="mb-6 p-4 bg-green-500/10 border border-green-500/30 rounded text-green-400 text-sm flex items-center gap-2">
+            <CheckCircle2 size={16} />
+            <span>{statusMessage}</span>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {loading ? (
@@ -268,8 +317,9 @@ export const PropertySearch: React.FC<NavigationProps> = ({ onNavigate }) => {
             properties.map((property) => (
               <div
                 key={property.id}
-                className="glass-panel p-6 rounded-sm border border-white/10 hover:border-luxury-gold/30 transition-all cursor-pointer group"
+                className="glass-panel p-6 rounded-sm border border-white/10 hover:border-luxury-gold/30 transition-all group relative overflow-hidden"
               >
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/2 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
                     <h3 className="text-white font-serif text-lg mb-2 group-hover:text-luxury-gold transition-colors">
@@ -280,6 +330,19 @@ export const PropertySearch: React.FC<NavigationProps> = ({ onNavigate }) => {
                       <span>{property.locality}, {property.city}</span>
                     </div>
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => toggleSave(property.id)}
+                    disabled={savingId === property.id}
+                    className={`text-xs uppercase tracking-widest font-bold flex items-center gap-2 px-3 py-1 rounded border transition-colors ${
+                      savedIds.has(property.id)
+                        ? 'text-luxury-gold border-luxury-gold/40 hover:bg-luxury-gold hover:text-black'
+                        : 'text-white/70 border-white/10 hover:border-luxury-gold/40 hover:text-white'
+                    } ${savingId === property.id ? 'opacity-60 cursor-wait' : ''}`}
+                  >
+                    {savedIds.has(property.id) ? <HeartOff size={14} /> : <Heart size={14} />}
+                    {savedIds.has(property.id) ? 'Saved' : 'Save'}
+                  </button>
                 </div>
 
                 <div className="space-y-2 mb-4">
